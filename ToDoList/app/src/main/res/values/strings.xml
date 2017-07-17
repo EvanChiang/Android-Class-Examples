@@ -1,3 +1,10 @@
 <resources>
     <string name="app_name">ToDoList</string>
+    <string name="completed">Completed</string>
+    <string-array name="todo_categories"> //adding the preset categories for spinner menu
+        <item>Work</item>
+        <item>School</item>
+        <item>Home</item>
+        <item>Other</item>
+    </string-array>
 </resources>

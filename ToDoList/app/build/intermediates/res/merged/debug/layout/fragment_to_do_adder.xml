@@ -16,6 +16,14 @@
         android:layout_marginBottom="10dp"
         android:hint="Enter To Do" />
 
+    //adding spinner with preset categories
+    <Spinner
+        android:id="@+id/spinner"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+    </Spinner>
+
     <DatePicker
         android:id="@+id/datePicker"
         android:layout_width="match_parent"
