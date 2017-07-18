@@ -111,7 +111,17 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
         return String.format("%04d-%02d-%02d", year, month + 1, day);
     }
 
-
+    //query for the selected category
+    private Cursor getAllSelectedItems(SQLiteDatabase db, String category){
+        return db.query(
+                Contract.TABLE_TODO.TABLE_NAME,
+                null,
+                Contract.TABLE_TODO.COLUMN_NAME_CATEGORY + " = ?",
+                new String[] { category },
+                null,
+                null,
+                Contract.TABLE_TODO.COLUMN_NAME_DUE_DATE);
+    }
 
     private Cursor getAllItems(SQLiteDatabase db) {
         return db.query(
@@ -121,7 +131,7 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
                 null,
                 null,
                 null,
-                null
+                Contract.TABLE_TODO.COLUMN_NAME_DUE_DATE
         );
     }
 
