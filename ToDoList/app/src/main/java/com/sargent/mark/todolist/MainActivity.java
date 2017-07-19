@@ -13,7 +13,10 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.helper.ItemTouchHelper;
 import android.util.Log;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.Spinner;
 
 
 import com.sargent.mark.todolist.data.Contract;
@@ -24,8 +27,10 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
 
     private RecyclerView rv;
     private FloatingActionButton button;
+    private Button buttonFilter;
     private DBHelper helper;
     private Cursor cursor;
+    private Spinner spinner;
     private SQLiteDatabase db;
     ToDoListAdapter adapter;
     private final String TAG = "mainactivity";
@@ -36,6 +41,46 @@ public class MainActivity extends AppCompatActivity implements AddToDoFragment.O
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Log.d(TAG, "oncreate called in main activity");
+
+        spinner = (Spinner) findViewById(R.id.spinner);
+//
+//        //added spinner and attached preset items. code taken from
+//        //https://developer.android.com/guide/topics/ui/controls/spinner.html#Populate
+        final ArrayAdapter<CharSequence> spinnerAdapter = ArrayAdapter.createFromResource(this,
+                R.array.todo_categories, android.R.layout.simple_spinner_item);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
+
+        //added button with click listener. when clicking the button, it will call getAllSelectedItems with the currently selected category
+        //then it will update the toDoFragment with the new queried results.
+        buttonFilter = (Button) findViewById(R.id.button);
+        buttonFilter.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String category = spinner.getSelectedItem().toString();
+                cursor = getAllSelectedItems(db, category);
+                adapter = new ToDoListAdapter(cursor, new ToDoListAdapter.ItemClickListener() {
+
+                    @Override
+                    public void onItemClick(int pos, String description, String duedate, long id, String category) {
+                        Log.d(TAG, "item click id: " + id);
+                        String[] dateInfo = duedate.split("-");
+                        int year = Integer.parseInt(dateInfo[0].replaceAll("\\s",""));
+                        int month = Integer.parseInt(dateInfo[1].replaceAll("\\s",""));
+                        int day = Integer.parseInt(dateInfo[2].replaceAll("\\s",""));
+
+                        FragmentManager fm = getSupportFragmentManager();
+
+                        UpdateToDoFragment frag = UpdateToDoFragment.newInstance(year, month, day, description, id, category);
+                        frag.show(fm, "updatetodofragment");
+                    }
+                });
+
+                rv.setAdapter(adapter);
+            }
+        });
+
+
         button = (FloatingActionButton) findViewById(R.id.addToDo);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
